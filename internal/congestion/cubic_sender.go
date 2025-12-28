@@ -72,15 +72,18 @@ func NewCubicSender(
 	reno bool,
 	tracer *logging.ConnectionTracer,
 ) *cubicSender {
-	return newCubicSender(
-		clock,
-		rttStats,
-		reno,
-		initialMaxDatagramSize,
-		initialCongestionWindow*initialMaxDatagramSize,
-		protocol.MaxCongestionWindowPackets*initialMaxDatagramSize,
-		tracer,
-	)
+
+	panic("USING MY MODIFIED cubicSender")
+
+	// return newCubicSender(
+	// 	clock,
+	// 	rttStats,
+	// 	reno,
+	// 	initialMaxDatagramSize,
+	// 	initialCongestionWindow*initialMaxDatagramSize,
+	// 	protocol.MaxCongestionWindowPackets*initialMaxDatagramSize,
+	// 	tracer,
+	// )
 }
 
 func newCubicSender(
