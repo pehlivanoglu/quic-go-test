@@ -198,10 +198,10 @@ func (c *cubicSender) OnCongestionEvent(packetNumber protocol.PacketNumber, lost
 	c.maybeTraceStateChange(logging.CongestionStateRecovery)
 
 	if c.reno {
-		c.congestionWindow = protocol.ByteCount(float64(c.congestionWindow) * renoBeta)
+		c.congestionWindow = protocol.ByteCount(float64(c.congestionWindow))
 	} else {
 		// c.congestionWindow = c.cubic.CongestionWindowAfterPacketLoss(c.congestionWindow)
-		c.congestionWindow = protocol.ByteCount(float64(c.congestionWindow) * renoBeta)
+		c.congestionWindow = protocol.ByteCount(float64(c.congestionWindow))
 	}
 	if minCwnd := c.minCongestionWindow(); c.congestionWindow < minCwnd {
 		c.congestionWindow = minCwnd
@@ -247,7 +247,7 @@ func (c *cubicSender) maybeIncreaseCwnd(
 			c.numAckedPackets = 0
 		}
 	} else {
-		c.congestionWindow = min(c.maxCongestionWindow(), c.cubic.CongestionWindowAfterAck(ackedBytes, c.congestionWindow, c.rttStats.MinRTT(), eventTime))
+		// c.congestionWindow = min(c.maxCongestionWindow(), c.cubic.CongestionWindowAfterAck(ackedBytes, c.congestionWindow, c.rttStats.MinRTT(), eventTime))
 	}
 }
 
@@ -273,14 +273,15 @@ func (c *cubicSender) BandwidthEstimate() Bandwidth {
 
 // OnRetransmissionTimeout is called on an retransmission timeout
 func (c *cubicSender) OnRetransmissionTimeout(packetsRetransmitted bool) {
-	c.largestSentAtLastCutback = protocol.InvalidPacketNumber
-	if !packetsRetransmitted {
-		return
-	}
-	c.hybridSlowStart.Restart()
-	c.cubic.Reset()
-	c.slowStartThreshold = c.congestionWindow / 2
-	c.congestionWindow = c.minCongestionWindow()
+	// c.largestSentAtLastCutback = protocol.InvalidPacketNumber
+	// if !packetsRetransmitted {
+	// 	return
+	// }
+	// c.hybridSlowStart.Restart()
+	// c.cubic.Reset()
+	// c.slowStartThreshold = c.congestionWindow / 2
+	// c.congestionWindow = c.minCongestionWindow()
+	return
 }
 
 // OnConnectionMigration is called when the connection is migrated (?)
