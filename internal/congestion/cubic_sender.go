@@ -200,7 +200,8 @@ func (c *cubicSender) OnCongestionEvent(packetNumber protocol.PacketNumber, lost
 	if c.reno {
 		c.congestionWindow = protocol.ByteCount(float64(c.congestionWindow) * renoBeta)
 	} else {
-		c.congestionWindow = c.cubic.CongestionWindowAfterPacketLoss(c.congestionWindow)
+		// c.congestionWindow = c.cubic.CongestionWindowAfterPacketLoss(c.congestionWindow)
+		c.congestionWindow = protocol.ByteCount(float64(c.congestionWindow) * renoBeta)
 	}
 	if minCwnd := c.minCongestionWindow(); c.congestionWindow < minCwnd {
 		c.congestionWindow = minCwnd
