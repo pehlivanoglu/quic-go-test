@@ -27,12 +27,12 @@ const (
 const defaultNumConnections = 1
 
 // Default Cubic backoff factor
-const beta float32 = 0.7
+const beta float32 = 1
 
 // Additional backoff factor when loss occurs in the concave part of the Cubic
 // curve. This additional backoff factor is expected to give up bandwidth to
 // new concurrent flows and speed up convergence.
-const betaLastMax float32 = 0.85
+const betaLastMax float32 = 1
 
 // Cubic implements the cubic algorithm from TCP
 type Cubic struct {
@@ -128,15 +128,9 @@ func (c *Cubic) OnApplicationLimited() {
 // a loss event. Returns the new congestion window in packets. The new
 // congestion window is a multiplicative decrease of our current window.
 func (c *Cubic) CongestionWindowAfterPacketLoss(currentCongestionWindow protocol.ByteCount) protocol.ByteCount {
-	if currentCongestionWindow+maxDatagramSize < c.lastMaxCongestionWindow {
-		// We never reached the old max, so assume we are competing with another
-		// flow. Use our extra back off factor to allow the other flow to go up.
-		c.lastMaxCongestionWindow = protocol.ByteCount(c.betaLastMax() * float32(currentCongestionWindow))
-	} else {
-		c.lastMaxCongestionWindow = currentCongestionWindow
-	}
-	c.epoch = time.Time{} // Reset time.
-	return protocol.ByteCount(float32(currentCongestionWindow) * c.beta())
+	c.lastMaxCongestionWindow = currentCongestionWindow
+	c.epoch = time.Time{}
+	return currentCongestionWindow
 }
 
 // CongestionWindowAfterAck computes a new congestion window to use after a received ACK.
