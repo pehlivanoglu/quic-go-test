@@ -72,7 +72,8 @@ func NewCubic(clock Clock) *Cubic {
 		numConnections: defaultNumConnections,
 	}
 	c.Reset()
-	return c
+	panic("USING MY OWN CUBIC.GO")
+	//return c
 }
 
 // Reset is called after a timeout to reset the cubic state
