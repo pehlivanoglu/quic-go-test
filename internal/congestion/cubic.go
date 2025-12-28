@@ -128,15 +128,16 @@ func (c *Cubic) OnApplicationLimited() {
 // a loss event. Returns the new congestion window in packets. The new
 // congestion window is a multiplicative decrease of our current window.
 func (c *Cubic) CongestionWindowAfterPacketLoss(currentCongestionWindow protocol.ByteCount) protocol.ByteCount {
-	if currentCongestionWindow+maxDatagramSize < c.lastMaxCongestionWindow {
-		// We never reached the old max, so assume we are competing with another
-		// flow. Use our extra back off factor to allow the other flow to go up.
-		c.lastMaxCongestionWindow = protocol.ByteCount(c.betaLastMax() * float32(currentCongestionWindow))
-	} else {
-		c.lastMaxCongestionWindow = currentCongestionWindow
-	}
-	c.epoch = time.Time{} // Reset time.
-	return protocol.ByteCount(float32(currentCongestionWindow) * c.beta())
+	// if currentCongestionWindow+maxDatagramSize < c.lastMaxCongestionWindow {
+	// 	// We never reached the old max, so assume we are competing with another
+	// 	// flow. Use our extra back off factor to allow the other flow to go up.
+	// 	c.lastMaxCongestionWindow = protocol.ByteCount(c.betaLastMax() * float32(currentCongestionWindow))
+	// } else {
+	// 	c.lastMaxCongestionWindow = currentCongestionWindow
+	// }
+	// c.epoch = time.Time{} // Reset time.
+	// return protocol.ByteCount(float32(currentCongestionWindow) * c.beta())
+	return currentCongestionWindow
 }
 
 // CongestionWindowAfterAck computes a new congestion window to use after a received ACK.
