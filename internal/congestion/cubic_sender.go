@@ -14,8 +14,8 @@ const (
 	// Used in QUIC for congestion window computations in bytes.
 	initialMaxDatagramSize     = protocol.ByteCount(protocol.InitialPacketSize)
 	maxBurstPackets            = 3
-	renoBeta                   = 0.7 // Reno backoff factor.
-	minCongestionWindowPackets = 2
+	renoBeta                   = 1 // Reno backoff factor.
+	minCongestionWindowPackets = 150
 	initialCongestionWindow    = 32
 )
 
@@ -200,11 +200,11 @@ func (c *cubicSender) OnCongestionEvent(packetNumber protocol.PacketNumber, lost
 	if c.reno {
 		c.congestionWindow = protocol.ByteCount(float64(c.congestionWindow) * renoBeta)
 	} else {
-		c.congestionWindow = c.cubic.CongestionWindowAfterPacketLoss(c.congestionWindow)
+		c.congestionWindow = protocol.ByteCount(float64(c.congestionWindow) * renoBeta)
 	}
-	if minCwnd := c.minCongestionWindow(); c.congestionWindow < minCwnd {
-		c.congestionWindow = minCwnd
-	}
+	// if minCwnd := c.minCongestionWindow(); c.congestionWindow < minCwnd {
+	// 	c.congestionWindow = minCwnd
+	// }
 	c.slowStartThreshold = c.congestionWindow
 	c.largestSentAtLastCutback = c.largestSentPacketNumber
 	// reset packet count from congestion avoidance mode. We start
@@ -276,9 +276,9 @@ func (c *cubicSender) OnRetransmissionTimeout(packetsRetransmitted bool) {
 	if !packetsRetransmitted {
 		return
 	}
-	c.hybridSlowStart.Restart()
-	c.cubic.Reset()
-	c.slowStartThreshold = c.congestionWindow / 2
+	//c.hybridSlowStart.Restart()
+	//c.cubic.Reset()
+	//c.slowStartThreshold = c.congestionWindow / 2
 	c.congestionWindow = c.minCongestionWindow()
 }
 
